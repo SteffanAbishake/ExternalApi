@@ -1,7 +1,7 @@
 # ExternalApi Cash Web API
 
 ## OVERVIEW
-It wil fetch the data from 3rd partty external ap(JSONPlaceholder), then stores the data into SQL and implement the cashing mechanisam.
+It wil fetch the data from 3rd partty external api(JSONPlaceholder), then stores the data into SQL and implement the cashing mechanisam.
 1 - Here data will retrive from the database first
 2 - If data not found, it will fecth from the external API and it will store locally in the DB.
 
