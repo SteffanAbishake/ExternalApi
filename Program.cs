@@ -1,25 +1,47 @@
-var builder = WebApplication.CreateBuilder(args);
+    using ExternalApiCache.Repositories;
 
-// Add services to the container.
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+    // SERVICES
+    builder.Services.AddControllers();
 
-var app = builder.Build();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    // Dependency Injection
+    builder.Services.AddScoped<PostRepository>();
 
-app.UseHttpsRedirection();
+    // HttpClient for external API calls
+    builder.Services.AddHttpClient();
 
-app.UseAuthorization();
+    var app = builder.Build();
 
-app.MapControllers();
+    // GLOBAL ERROR HANDLING
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            context.Response.StatusCode = 500;
+            context.Response.ContentType = "application/json";
 
-app.Run();
+            await context.Response.WriteAsJsonAsync(new
+            {
+                message = "Something went wrong on the server. Please try again later."
+            });
+        });
+    });
+
+    // PIPELINE
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
